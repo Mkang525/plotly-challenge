@@ -75,7 +75,7 @@ function createDataCharts (sample) {
         };
 
         var bubbleData = [bubbleTrace];
-
+        
         var bubbleLayout = {
             title: "Bubble Chart",
             showlegend: false,
@@ -99,10 +99,8 @@ function createInfoBox(sample) {
 
         Object.entries(result).forEach(([key, value]) => {
             infoBox.append("h5").text(`${key.toUpperCase()}: ${value}`);
-
         });
     });
-
 }
 
 // BONUS: Build the Gauge Chart
@@ -115,7 +113,6 @@ function buildGauge(sample) {
         var result = resultArray[0]; 
         var washFrequency = result.wfreq;
         
-
         var data = [
             {
                 domain: { x: [0, 1], y: [0, 1] },
