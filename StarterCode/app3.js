@@ -10,14 +10,16 @@ function init() {
           .property("value", sample);
       });
       
-      var firstSample = sampleNames[0];
-      createDataCharts(firstSample);
-      createInfoBox(firstSample);
+      var defaultSample = sampleNames[0];
+      createDataCharts(defaultSample);
+      createInfoBox(defaultSample);
+      buildGauge(defaultSample);
       
     });
-   }
-   // Initialize the dashboard
-   init();
+}
+init();
+
+//Create function to build charts
 
 function createDataCharts (sample) {
     d3.json("samples.json").then((data) => {
@@ -52,7 +54,6 @@ function createDataCharts (sample) {
     
         var layout = {
             title: "Top 10"
-            
         };
     
         Plotly.newPlot("bar", data, layout);
@@ -65,9 +66,10 @@ function createDataCharts (sample) {
             text: otuLabels,
             margin: {t:40},
             mode: "markers",
+            
             marker: {
                 colorscale: "YlGnBu",
-                opacity: [1, 0.8, 0.6, 0.4],
+                opacity: [1, 0.8, 0.6, 0.4, 0.2],
                 size: sampleValuesData
             }
         };
@@ -77,7 +79,6 @@ function createDataCharts (sample) {
         var bubbleLayout = {
             title: "Bubble Chart",
             showlegend: false,
-
         };
         Plotly.newPlot("bubble", bubbleData, bubbleLayout);
     });
@@ -104,13 +105,42 @@ function createInfoBox(sample) {
 
 }
 
+// BONUS: Build the Gauge Chart
+
+function buildGauge(sample) {
+    d3.json("samples.json").then((data) => {
+        var metadata = data.metadata; 
+        console.log(metadata);
+        var resultArray = metadata.filter(object => object.id == sample);
+        var result = resultArray[0]; 
+        var washFrequency = result.wfreq;
+        
+
+        var data = [
+            {
+                domain: { x: [0, 1], y: [0, 1] },
+                value: washFrequency,
+                title: { text: "Wash Frequency" },
+                type: "indicator",
+                mode: "gauge+number",
+                gauge: { axis: { range: [null, 9] } },
+                color: "blue"
+            }
+        ];
+        
+        var layout = { width: 600, height: 500, margin: { t: 0, b: 0 } };
+        
+        Plotly.newPlot('gauge', data, layout);
+    });
+}
+
+//Create a function to update charts when dropdown selection is made
+
 function optionChanged() {
     var dropdownMenu = d3.select("#selDataset");
-    var dataset = dropdownMenu.property("value");
-    console.log(dataset);
+    var sampleId = dropdownMenu.property("value");
 
-    createDataCharts(dataset);
-    createInfoBox(dataset);
-
-
+    createDataCharts(sampleId);
+    createInfoBox(sampleId);
+    buildGauge(sampleId);
 }
